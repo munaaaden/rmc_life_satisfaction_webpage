@@ -1,8 +1,8 @@
 ---
 title: "Self-reported life satisfaction, 2011 to 2023"
 subtitle: "Replicating the Our World in Data Grapher"
-author: "YOUR NAME HERE" # Remember to add your name!
-date: "24-07-2024"
+author: "Muna A Aden" # Remember to add your name!
+date: "2024-07-24"
 theme: united
 ---
 
@@ -45,6 +45,7 @@ The main life evaluation question asked in the poll is the Cantril Life Ladder q
 
 > “Please imagine a ladder, with steps numbered from 0 at the bottom to 10 at the top. The top of the ladder represents the best possible life for you and the bottom of the ladder represents the worst possible life for you. On which step of the ladder would you say you personally feel you stand at this time?”
 
+:::{.panel-tabset}
 
 ## 🔢 Table
 
@@ -57,10 +58,22 @@ The main life evaluation question asked in the poll is the Cantril Life Ladder q
 
 # Create table
 
-"WRITE_YOUR_CODE_HERE"
+Table_1 <-  cantril %>% 
+  filter(Year %in% c(2011, 2023)) %>% 
+  pivot_wider(names_from = Year, values_from = `Cantril ladder score`) %>% 
+  select(!Code) %>% 
+  mutate(`Absolute Change` = round(`2011` - `2023`, 2)) %>% 
+  mutate (`Relative Change` = scales::percent(round(`Absolute Change` / `2011`, 2))) %>% 
+  reactable()
+  
+  Table_1
+  
+  
 ```
+:::
 
 
+:::{.panel-tabset}
 ## 🌎 Map
 
 The map plots the average answer that survey respondents provided to this question in different countries. As with the steps of the ladder, values in the map range from 0 to 10.
@@ -98,8 +111,9 @@ cantril %>%
            ticktext = seq(0, 10, by = 2)) %>%
   layout(geo = g)
 ```
+:::
 
-
+:::{.panel-tabset}
 ## 📈 Simple Chart
 
 ```{r}
@@ -107,9 +121,22 @@ cantril %>%
 # Note that your chart will not have the ability to filter countries like the one on the Our World in Data page.
 
 # Create line chart
-"WRITE_YOUR_CODE_HERE"
-```
+Chart1 <-  cantril %>% 
+  filter (Country %in% c("Afghanistan", "Africa", "Albania", "Algeria", "Angola", "Argentina", "Armenia", "Asia")) %>%
+            ggplot(aes(Year, `Cantril ladder score` , color = Country)) +
+            geom_line () +
+  scale_y_continuous(limits = c(0,10)) +
+  labs() +
+  theme_minimal() 
 
+
+  ggplotly(Chart1)
+  
+            
+```
+:::
+
+:::{.panel-tabset}
 ## 📈 Advanced Chart
 
 One problem with the simple chart on the previous tab is that the countries are fixed. It would be better if the user could select the countries they want to see. This is not possible with `plotly` alone, but with the `crosstalk` package and some custom JavaScript, we can achieve this, as demonstrated below.
@@ -150,6 +177,7 @@ bscols(
   list(country_filter, cantril_plotly)
 )
 ```
+:::
 
 <!-- Custom javascript to set default values in the filter: -->
 <script>
